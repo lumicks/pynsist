@@ -29,6 +29,11 @@ class CompatibilityScorer:
         self.py_version = py_version
         self.platform = platform
 
+    @property
+    def py_version_tuple(self):
+        parts = self.py_version.split('.')
+        return int(parts[0]), int(parts[1])
+
     def score_platform(self, platform):
         # target = 'win_amd64' if self.bitness == 64 else 'win32'
         d = {self.platform: 2, 'any': 1}
@@ -37,8 +42,14 @@ class CompatibilityScorer:
     def score_abi(self, abi):
         py_version_nodot = ''.join(self.py_version.split('.')[:2])
         # Are there other valid options here?
-        d = {'cp%sm' % py_version_nodot: 3,  # Is the m reliable?
-            'abi3': 2, 'none': 1}
+        cp_abi_flag = 'cp%s' % py_version_nodot
+        if self.py_version_tuple < (3, 8):
+            cp_abi_flag += 'm'  # Is the m reliable?
+        d = {
+            cp_abi_flag: 3,
+            'abi3': 2,
+            'none': 1,
+        }
         return max(d.get(a, 0) for a in abi.split('.'))
 
     def score_interpreter(self, interpreter):
