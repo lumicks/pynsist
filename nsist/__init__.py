@@ -224,7 +224,7 @@ import sys, os
 import site
 scriptdir, script = os.path.split(__file__)
 installdir = scriptdir  # for compatibility with commands
-pkgdir = os.path.join(scriptdir, 'pkgs')
+pkgdir = os.path.abspath(os.path.join(scriptdir, 'pkgs'))
 sys.path.insert(0, pkgdir)
 # Ensure .pth files in pkgdir are handled properly
 site.addsitedir(pkgdir)
